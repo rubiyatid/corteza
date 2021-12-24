@@ -1,0 +1,102 @@
+package: automation
+imports:
+  - github.com/cortezaproject/corteza-server/system/types
+  - github.com/cortezaproject/corteza-server/pkg/rbac
+  - github.com/cortezaproject/corteza-server/pkg/actionlog
+
+types:
+  Template:
+    as: '*types.Template'
+    struct:
+      - { name: 'ID',              exprType: 'ID',           goType: 'uint64',     mode: ro, alias: 'templateID'}
+      - { name: 'handle',          exprType: 'Handle',       goType: 'string' }
+      - { name: 'language',        exprType: 'String',       goType: 'string' }
+
+      - { name: 'type',            exprType: 'DocumentType', goType: 'types.DocumentType' }
+      - { name: 'partial',         exprType: 'Boolean',      goType: 'bool' }
+
+      - { name: 'meta',            exprType: 'TemplateMeta', goType: 'types.TemplateMeta' }
+      - { name: 'template',        exprType: 'String',       goType: 'string' }
+      - { name: 'labels',          exprType: 'KV',           goType: 'map[string]string' }
+
+      - { name: 'ownerID',         exprType: 'ID',           goType: 'uint64',     mode: ro}
+      - { name: 'createdAt',       exprType: 'DateTime',     goType: 'time.Time',  mode: ro}
+      - { name: 'updatedAt',       exprType: 'DateTime',     goType: '*time.Time', mode: ro }
+      - { name: 'deletedAt',       exprType: 'DateTime',     goType: '*time.Time', mode: ro }
+      - { name: 'lastUsedAt',      exprType: 'DateTime',     goType: '*time.Time', mode: ro }
+  User:
+    as: '*types.User'
+    struct:
+      - { name: 'ID',              exprType: 'ID',         goType: 'uint64', mode: ro, alias: 'userID' }
+      - { name: 'username',        exprType: 'String',     goType: 'string' }
+      - { name: 'email',           exprType: 'String',     goType: 'string' }
+      - { name: 'name',            exprType: 'String',     goType: 'string' }
+      - { name: 'handle',          exprType: 'Handle',     goType: 'string' }
+      - { name: 'emailConfirmed',  exprType: 'Boolean',    goType: 'bool' }
+      - { name: 'labels',          exprType: 'KV',         goType: 'map[string]string' }
+      - { name: 'createdAt',       exprType: 'DateTime',   goType: 'time.Time',  mode: ro}
+      - { name: 'updatedAt',       exprType: 'DateTime',   goType: '*time.Time', mode: ro }
+      - { name: 'suspendedAt',     exprType: 'DateTime',   goType: '*time.Time', mode: ro }
+      - { name: 'deletedAt',       exprType: 'DateTime',   goType: '*time.Time', mode: ro }
+  Role:
+    as: '*types.Role'
+    struct:
+      - { name: 'ID',              exprType: 'ID',         goType: 'uint64', mode: ro, alias: 'roleID' }
+      - { name: 'name',            exprType: 'String',     goType: 'string' }
+      - { name: 'handle',          exprType: 'Handle',     goType: 'string' }
+      - { name: 'labels',          exprType: 'KV',         goType: 'map[string]string' }
+      - { name: 'createdAt',       exprType: 'DateTime',   goType: 'time.Time',  mode: ro}
+      - { name: 'updatedAt',       exprType: 'DateTime',   goType: '*time.Time', mode: ro }
+      - { name: 'archivedAt',      exprType: 'DateTime',   goType: '*time.Time', mode: ro }
+      - { name: 'deletedAt',       exprType: 'DateTime',   goType: '*time.Time', mode: ro }
+
+  DocumentType:
+    as: 'types.DocumentType'
+  TemplateMeta:
+    as: 'types.TemplateMeta'
+    struct:
+      - { name: 'short',       exprType: 'String', goType: 'string'}
+      - { name: 'description', exprType: 'String', goType: 'string'}
+  RenderedDocument:
+   as: '*renderedDocument'
+   struct:
+      - { name: 'document', exprType: 'Reader', goType: 'io.Reader' }
+      - { name: 'name',     exprType: 'string', goType: 'string' }
+      - { name: 'type',     exprType: 'string', goType: 'string' }
+  RenderOptions:
+    as: 'map[string]string'
+
+  QueueMessage:
+    as: '*types.QueueMessage'
+    struct:
+      - { name: 'Queue',   exprType: 'String', goType: 'string' }
+      - { name: 'Payload', exprType: 'Bytes',  goType: '[]byte' }
+
+  HttpRequest:
+    as: '*types.HttpRequest'
+    struct:
+      - { name: 'Method',   exprType: 'String', goType: 'string' }
+      - { name: 'URL',      exprType: 'Url',    goType: 'url.Url' }
+      - { name: 'Header',   exprType: 'KVV',    goType: 'map[string][]string' }
+      - { name: 'Body',     exprType: 'Reader', goType: 'io.Reader' }
+      - { name: 'Form',     exprType: 'KVV',    goType: 'map[string][]string' }
+      - { name: 'PostForm', exprType: 'KVV',    goType: 'map[string][]string' }
+
+  Url:
+    as: '*types.Url'
+    struct:
+      - { name: 'Scheme',      exprType: 'String',  goType: 'string' }
+      - { name: 'Opaque',      exprType: 'String',  goType: 'string' }
+      - { name: 'Host',        exprType: 'String',  goType: 'string' }
+      - { name: 'Path',        exprType: 'String',  goType: 'string' }
+      - { name: 'RawPath',     exprType: 'String',  goType: 'string' }
+      - { name: 'ForceQuery',  exprType: 'Boolean', goType: 'bool' }
+      - { name: 'RawQuery',    exprType: 'String',  goType: 'string' }
+      - { name: 'Fragment',    exprType: 'String',  goType: 'string' }
+      - { name: 'RawFragment', exprType: 'String',  goType: 'string' }
+
+  RbacResource:
+    as: 'rbac.Resource'
+
+  Action:
+    as: '*actionlog.Action'
